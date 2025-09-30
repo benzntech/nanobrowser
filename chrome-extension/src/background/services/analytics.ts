@@ -18,7 +18,9 @@ export class AnalyticsService {
 
   private static readonly ERROR_TYPE_CATEGORIES = {
     ChatModelAuthError: 'llm_auth_error',
+    ChatModelBadRequestError: 'llm_bad_request_error',
     ChatModelForbiddenError: 'llm_forbidden_error',
+    ResponseParseError: 'llm_response_parse_error',
     URLNotAllowedError: 'url_blocked_error',
     RequestCancelledError: 'request_cancelled_error',
     ExtensionConflictError: 'extension_conflict_error',
@@ -78,13 +80,13 @@ export class AnalyticsService {
         mask_all_element_attributes: true,
         opt_out_capturing_by_default: false, // Enabled by default per requirements
         loaded: () => {
-          // Identify user with anonymous ID
-          posthog.identify(settings.anonymousUserId);
           this.initialized = true;
           logger.info('Analytics initialized');
         },
+        bootstrap: {
+          distinctID: settings.anonymousUserId,
+        },
         // Disable features that may cause Chrome Web Store rejections
-        bootstrap: {},
         session_recording: {
           maskAllInputs: true,
           maskInputOptions: {
